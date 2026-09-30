@@ -286,36 +286,40 @@
             video.muted = false;
             video.volume = 1.0;
             
-            // Forzar reproducción del video con audio
-            video.play().then(() => {
-                console.log('Video Sí reproduciendo con audio');
-            }).catch(e => {
-                console.log('Error video:', e);
-                video.muted = true;
-                video.play().then(() => {
-                    setTimeout(() => {
-                        video.muted = false;
-                    }, 100);
-                });
-            });
+            // Limpiar evento anterior si existe
+            video.onended = null;
             
             // Cuando termine el video, redirigir a LinkedIn
             video.onended = function() {
+                console.log('Video terminado, redirigiendo a LinkedIn');
                 window.location.href = 'https://www.linkedin.com';
             };
             
-            // También agregar un botón de respaldo por si el evento onended no funciona
+            // Forzar reproducción del video con audio
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log('Video reproducido');
+                }).catch(e => {
+                    console.log('Error video:', e);
+                    // Si falla, ir directo a LinkedIn
+                    window.location.href = 'https://www.linkedin.com';
+                });
+            }
+            
+            // Botón de respaldo después de 10 segundos
             setTimeout(function() {
-                if (!video.ended && video.currentTime > 0) {
-                    // Si el video se quedó atascado, verificar periódicamente
-                    const checkInterval = setInterval(function() {
-                        if (video.ended) {
-                            clearInterval(checkInterval);
-                            window.location.href = 'https://www.linkedin.com';
-                        }
-                    }, 500);
+                if (!video.ended) {
+                    console.log('Video no terminó, mostrando botón de respaldo');
+                    const btn = document.createElement('button');
+                    btn.textContent = 'Ir a LinkedIn';
+                    btn.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:20px 40px;font-size:1.5rem;background:#0077b5;color:#fff;border:none;border-radius:10px;cursor:pointer;z-index:2000;';
+                    btn.onclick = function() {
+                        window.location.href = 'https://www.linkedin.com';
+                    };
+                    document.body.appendChild(btn);
                 }
-            }, 1000);
+            }, 10000);
         }
 
         // Botón "No" que escapa
