@@ -258,6 +258,10 @@
 
         // Al hacer clic en el overlay, iniciar música y ocultar overlay
         startOverlay.addEventListener('click', function() {
+            // Pausar el video por si acaso
+            noVideo.pause();
+            noVideo.currentTime = 0;
+            
             bgMusic.play().then(() => {
                 console.log('Música iniciada');
             }).catch(e => {
