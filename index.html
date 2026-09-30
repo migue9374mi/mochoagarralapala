@@ -165,9 +165,46 @@
         audio {
             display: none;
         }
+
+        /* Overlay de inicio */
+        .start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            cursor: pointer;
+        }
+
+        .start-overlay h2 {
+            color: #fff;
+            font-size: 2rem;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .start-overlay.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <!-- Overlay de inicio -->
+    <div class="start-overlay" id="startOverlay">
+        <h2>CLIC PARA ENTRAR</h2>
+    </div>
+
     <!-- Fondo de palas -->
     <div class="shovel-bg" id="shovelBg"></div>
     
@@ -209,24 +246,20 @@
         }
         shovelBg.textContent = shovelText;
 
-        // Música de fondo - reproducir lo antes posible
+        // Música de fondo
         const bgMusic = document.getElementById('bgMusic');
+        const startOverlay = document.getElementById('startOverlay');
         bgMusic.volume = 0.7;
-        
-        function tryPlay() {
+
+        // Al hacer clic en el overlay, iniciar música y ocultar overlay
+        startOverlay.addEventListener('click', function() {
             bgMusic.play().then(() => {
-                document.removeEventListener('click', tryPlay);
-                document.removeEventListener('keydown', tryPlay);
-                document.removeEventListener('touchstart', tryPlay);
-                document.removeEventListener('mousemove', tryPlay);
-            }).catch(() => {});
-        }
-        
-        tryPlay();
-        document.addEventListener('click', tryPlay);
-        document.addEventListener('keydown', tryPlay);
-        document.addEventListener('touchstart', tryPlay);
-        document.addEventListener('mousemove', tryPlay);
+                console.log('Música iniciada');
+            }).catch(e => {
+                console.log('Error:', e);
+            });
+            startOverlay.classList.add('hidden');
+        });
 
         // Función para ir a LinkedIn
         function goToLinkedIn() {
@@ -238,14 +271,29 @@
             const overlay = document.getElementById('videoOverlay');
             const video = document.getElementById('noVideo');
             
+            // Pausar la música de fondo
             bgMusic.pause();
             
             overlay.classList.add('active');
             video.currentTime = 0;
             video.muted = false;
             video.volume = 1.0;
-            video.play().catch(e => console.log('Video bloqueado:', e));
             
+            // Forzar reproducción del video con audio
+            video.play().then(() => {
+                console.log('Video reproduciendo con audio');
+            }).catch(e => {
+                console.log('Error video:', e);
+                // Si falla, intentar con muted y luego desmutear
+                video.muted = true;
+                video.play().then(() => {
+                    setTimeout(() => {
+                        video.muted = false;
+                    }, 100);
+                });
+            });
+            
+            // Cuando termine el video, cerrar la pestaña
             video.onended = function() {
                 window.close();
                 setTimeout(() => {
