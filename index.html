@@ -128,11 +128,18 @@
         .btn-no {
             border-color: #ff0000;
             color: #ff0000;
+            position: relative;
+            transition: all 0.3s ease;
         }
 
         .btn-no:hover {
             background: #ff0000;
             color: #fff;
+        }
+
+        .btn-no.escaping {
+            position: fixed;
+            z-index: 100;
         }
 
         /* Video overlay */
@@ -263,6 +270,45 @@
         function goToLinkedIn() {
             window.open('https://www.linkedin.com', '_blank');
         }
+
+        // Botón "No" que escapa
+        const btnNo = document.querySelector('.btn-no');
+        const btnYes = document.querySelector('.btn-yes');
+        let escapeCount = 0;
+        const maxEscapes = 10;
+
+        function escapeButton() {
+            if (escapeCount >= maxEscapes) return;
+            
+            escapeCount++;
+            
+            // Hacer el botón "Sí" más grande
+            const currentSize = 1 + (escapeCount * 0.1);
+            btnYes.style.transform = `scale(${currentSize})`;
+            
+            // Mover el botón "No" a una posición aleatoria
+            btnNo.classList.add('escaping');
+            const maxX = window.innerWidth - btnNo.offsetWidth - 20;
+            const maxY = window.innerHeight - btnNo.offsetHeight - 20;
+            const randomX = Math.random() * maxX + 10;
+            const randomY = Math.random() * maxY + 10;
+            
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+        }
+
+        // Escapar cuando el cursor se acerca
+        btnNo.addEventListener('mouseenter', escapeButton);
+        btnNo.addEventListener('click', function(e) {
+            e.preventDefault();
+            escapeButton();
+        });
+        
+        // También escapar en dispositivos táctiles
+        btnNo.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            escapeButton();
+        });
 
         // Función para mostrar el video en pantalla completa
         function showVideo() {
