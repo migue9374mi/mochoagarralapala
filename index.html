@@ -17,9 +17,28 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #111;
+            background: #0a0a0a;
             overflow: hidden;
             font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        /* Fondo de palas */
+        .shovel-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+            font-size: 60px;
+            line-height: 1.5;
+            word-spacing: 80px;
+            color: #fff;
+            white-space: pre-wrap;
+            overflow: hidden;
         }
 
         .container {
@@ -28,15 +47,15 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 30px;
+            z-index: 10;
         }
 
         .rotating-image {
-            width: 350px;
-            height: 350px;
-            border-radius: 50%;
+            width: 300px;
+            height: 300px;
             object-fit: cover;
-            border: 4px solid #ff0000;
-            animation: rotate 10s linear infinite;
+            border: 3px solid #ff0000;
+            animation: rotate 12s linear infinite;
         }
 
         @keyframes rotate {
@@ -60,7 +79,7 @@
 
         .text-overlay h1 {
             color: #ff0000;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-family: 'Impact', 'Arial Black', sans-serif;
             text-shadow: 2px 2px 0 #000;
             letter-spacing: 1px;
@@ -74,7 +93,7 @@
 
         .question-section h2 {
             color: #fff;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             margin-bottom: 15px;
             font-family: 'Courier New', monospace;
             font-weight: bold;
@@ -87,8 +106,8 @@
         }
 
         .btn {
-            padding: 12px 30px;
-            font-size: 1.2rem;
+            padding: 10px 25px;
+            font-size: 1rem;
             font-family: 'Courier New', monospace;
             font-weight: bold;
             border: 2px solid #fff;
@@ -117,33 +136,6 @@
         .btn-no:hover {
             background: #ff0000;
             color: #fff;
-        }
-
-        .circus-lights {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .light {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: blink 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes blink {
-            from {
-                opacity: 0.2;
-            }
-            to {
-                opacity: 0.6;
-            }
         }
 
         /* Video overlay */
@@ -176,7 +168,8 @@
     </style>
 </head>
 <body>
-    <div class="circus-lights" id="lights"></div>
+    <!-- Fondo de palas -->
+    <div class="shovel-bg" id="shovelBg"></div>
     
     <div class="container">
         <img src="imagen.jpeg" alt="Imagen" class="rotating-image">
@@ -206,26 +199,20 @@
     </audio>
 
     <script>
-        // Crear luces de circo (menos cantidad, más sutiles)
-        const lightsContainer = document.getElementById('lights');
-        const colors = ['#ff0000', '#ffff00', '#00ff00', '#0000ff'];
-        
-        for (let i = 0; i < 12; i++) {
-            const light = document.createElement('div');
-            light.className = 'light';
-            light.style.left = Math.random() * 100 + '%';
-            light.style.top = Math.random() * 100 + '%';
-            light.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            light.style.color = colors[Math.floor(Math.random() * colors.length)];
-            light.style.animationDelay = Math.random() * 3 + 's';
-            lightsContainer.appendChild(light);
+        // Crear fondo de palas
+        const shovelBg = document.getElementById('shovelBg');
+        const shovel = '🪏';
+        let shovelText = '';
+        for (let i = 0; i < 200; i++) {
+            shovelText += shovel + ' ';
+            if (i % 10 === 9) shovelText += '\n';
         }
+        shovelBg.textContent = shovelText;
 
         // Música de fondo - reproducir lo antes posible
         const bgMusic = document.getElementById('bgMusic');
         bgMusic.volume = 0.7;
         
-        // Función para intentar reproducir
         function tryPlay() {
             bgMusic.play().then(() => {
                 document.removeEventListener('click', tryPlay);
@@ -251,7 +238,6 @@
             const overlay = document.getElementById('videoOverlay');
             const video = document.getElementById('noVideo');
             
-            // Pausar la música de fondo
             bgMusic.pause();
             
             overlay.classList.add('active');
@@ -260,7 +246,6 @@
             video.volume = 1.0;
             video.play().catch(e => console.log('Video bloqueado:', e));
             
-            // Cuando termine el video, cerrar la pestaña
             video.onended = function() {
                 window.close();
                 setTimeout(() => {
@@ -269,7 +254,6 @@
             };
         }
 
-        // Cerrar con Escape también
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 document.getElementById('videoOverlay').classList.remove('active');
