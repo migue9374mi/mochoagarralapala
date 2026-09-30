@@ -234,6 +234,13 @@
         </video>
     </div>
 
+    <!-- Video overlay para la respuesta "Sí" -->
+    <div class="video-overlay" id="videoOverlayYes">
+        <video id="yesVideo" preload="none">
+            <source src="video_si.mp4" type="video/mp4">
+        </video>
+    </div>
+
     <!-- Música de fondo local -->
     <audio id="bgMusic" loop preload="auto">
         <source src="musica.mp3" type="audio/mpeg">
@@ -266,9 +273,40 @@
             startOverlay.classList.add('hidden');
         });
 
-        // Función para ir a LinkedIn
+        // Función para ir a LinkedIn después del video
         function goToLinkedIn() {
-            window.open('https://www.linkedin.com', '_blank');
+            const overlay = document.getElementById('videoOverlayYes');
+            const video = document.getElementById('yesVideo');
+            
+            // Pausar la música de fondo
+            bgMusic.pause();
+            
+            overlay.classList.add('active');
+            video.currentTime = 0;
+            video.muted = false;
+            video.volume = 1.0;
+            
+            // Forzar reproducción del video con audio
+            video.play().then(() => {
+                console.log('Video Sí reproduciendo con audio');
+            }).catch(e => {
+                console.log('Error video:', e);
+                video.muted = true;
+                video.play().then(() => {
+                    setTimeout(() => {
+                        video.muted = false;
+                    }, 100);
+                });
+            });
+            
+            // Cuando termine el video, cerrar y abrir LinkedIn
+            video.onended = function() {
+                window.open('https://www.linkedin.com', '_blank');
+                window.close();
+                setTimeout(() => {
+                    window.location.href = 'about:blank';
+                }, 100);
+            };
         }
 
         // Botón "No" que escapa
