@@ -299,19 +299,10 @@
                 });
             });
             
-            // Cuando termine el video, abrir LinkedIn y luego cerrar
+            // Cuando termine el video, redirigir a LinkedIn
             video.onended = function() {
-                // Primero abrir LinkedIn
-                window.open('https://www.linkedin.com', '_blank');
-                
-                // Esperar un momento para asegurar que se abra, luego cerrar
-                setTimeout(() => {
-                    window.close();
-                    // Si no se pudo cerrar, redirigir a about:blank
-                    setTimeout(() => {
-                        window.location.href = 'about:blank';
-                    }, 200);
-                }, 500);
+                // Redirigir a LinkedIn en la misma ventana
+                window.location.href = 'https://www.linkedin.com';
             };
         }
 
