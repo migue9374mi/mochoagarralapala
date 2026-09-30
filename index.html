@@ -33,11 +33,8 @@
             pointer-events: none;
             z-index: 0;
             opacity: 0.15;
-            font-size: 60px;
-            line-height: 1.5;
-            word-spacing: 80px;
-            color: #fff;
-            white-space: pre-wrap;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M50 10 L50 60 M50 60 L30 90 M50 60 L70 90 M30 90 Q50 100 70 90' stroke='white' stroke-width='4' fill='none'/%3E%3C/svg%3E");
+            background-size: 100px 100px;
             overflow: hidden;
         }
 
@@ -236,15 +233,7 @@
     </audio>
 
     <script>
-        // Crear fondo de palas
-        const shovelBg = document.getElementById('shovelBg');
-        const shovel = 'PALA ';
-        let shovelText = '';
-        for (let i = 0; i < 150; i++) {
-            shovelText += shovel;
-            if (i % 8 === 7) shovelText += '\n';
-        }
-        shovelBg.textContent = shovelText;
+        // Fondo de palas ya está configurado con CSS SVG
 
         // Música de fondo
         const bgMusic = document.getElementById('bgMusic');
