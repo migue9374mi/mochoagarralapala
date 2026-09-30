@@ -175,13 +175,15 @@
         }
 
         .video-overlay.active {
-            display: block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .video-overlay iframe {
+        .video-overlay video {
             width: 100%;
             height: 100%;
-            border: none;
+            object-fit: contain;
         }
 
         audio {
@@ -209,11 +211,15 @@
 
     <!-- Video overlay para la respuesta "No" -->
     <div class="video-overlay" id="videoOverlay">
-        <iframe id="youtubePlayer" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <video id="noVideo" autoplay>
+            <source src="video_no.mp4" type="video/mp4">
+        </video>
     </div>
 
-    <!-- Música de fondo (YouTube) -->
-    <iframe id="musicPlayer" src="https://www.youtube.com/embed/12qThgpRzcQ?autoplay=1&loop=1&playlist=12qThgpRzcQ" style="display:none;" allow="autoplay"></iframe>
+    <!-- Música de fondo local -->
+    <audio id="bgMusic" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
         // Crear luces de circo
@@ -231,6 +237,18 @@
             lightsContainer.appendChild(light);
         }
 
+        // Música de fondo
+        const bgMusic = document.getElementById('bgMusic');
+        bgMusic.volume = 0.7;
+        
+        // Intentar reproducción automática
+        bgMusic.play().catch(() => {
+            // Si falla, reproducir al primer clic
+            document.body.addEventListener('click', () => {
+                bgMusic.play().catch(e => console.log('Audio bloqueado:', e));
+            }, { once: true });
+        });
+
         // Función para ir a LinkedIn
         function goToLinkedIn() {
             window.open('https://www.linkedin.com', '_blank');
@@ -239,26 +257,31 @@
         // Función para mostrar el video en pantalla completa
         function showVideo() {
             const overlay = document.getElementById('videoOverlay');
-            const player = document.getElementById('youtubePlayer');
+            const video = document.getElementById('noVideo');
             
-            // Cargar el video con autoplay
-            player.src = 'https://www.youtube.com/embed/LTpHB78A50o?autoplay=1&enablejsapi=1';
             overlay.classList.add('active');
+            video.currentTime = 0;
+            video.play().catch(e => console.log('Video bloqueado:', e));
             
-            // Intentar cerrar la pestaña cuando el video termine
-            // Nota: window.close() solo funciona si la pestaña fue abierta por JavaScript
-            // Como alternativa, intentamos detectar el final del video
-            setTimeout(() => {
-                // Si el video dura aproximadamente 3 minutos, intentamos cerrar
-                // Esto es una aproximación ya que no podemos acceder al estado del video fácilmente
+            // Cuando termine el video, cerrar la pestaña
+            video.onended = function() {
+                // Intentar cerrar la ventana/pestaña
                 window.close();
-            }, 180000); // 3 minutos aproximados
+                
+                // Si no se pudo cerrar (porque no fue abierta por JS), 
+                // intentar redirigir a about:blank como alternativa
+                setTimeout(() => {
+                    window.location.href = 'about:blank';
+                }, 100);
+            };
         }
 
         // Cerrar con Escape también
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 document.getElementById('videoOverlay').classList.remove('active');
+                const video = document.getElementById('noVideo');
+                video.pause();
             }
         });
     </script>
