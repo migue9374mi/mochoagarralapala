@@ -301,9 +301,21 @@
             
             // Cuando termine el video, redirigir a LinkedIn
             video.onended = function() {
-                // Redirigir a LinkedIn en la misma ventana
                 window.location.href = 'https://www.linkedin.com';
             };
+            
+            // También agregar un botón de respaldo por si el evento onended no funciona
+            setTimeout(function() {
+                if (!video.ended && video.currentTime > 0) {
+                    // Si el video se quedó atascado, verificar periódicamente
+                    const checkInterval = setInterval(function() {
+                        if (video.ended) {
+                            clearInterval(checkInterval);
+                            window.location.href = 'https://www.linkedin.com';
+                        }
+                    }, 500);
+                }
+            }, 1000);
         }
 
         // Botón "No" que escapa
