@@ -14,6 +14,7 @@
         body {
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             background: radial-gradient(circle, #1a0a2e 0%, #000000 100%);
@@ -26,6 +27,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-bottom: 30px;
         }
 
         .rotating-image {
@@ -80,6 +82,57 @@
             }
         }
 
+        .question-section {
+            text-align: center;
+            z-index: 10;
+        }
+
+        .question-section h2 {
+            color: #ffffff;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.8);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .btn-no:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.8);
+        }
+
         .circus-lights {
             position: fixed;
             top: 0;
@@ -109,6 +162,28 @@
             }
         }
 
+        /* Video overlay */
+        .video-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+        }
+
+        .video-overlay.active {
+            display: block;
+        }
+
+        .video-overlay iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
         audio {
             display: none;
         }
@@ -124,9 +199,21 @@
         </div>
     </div>
 
-    <audio id="circusMusic" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
+    <div class="question-section">
+        <h2>¿Quieres chamba?</h2>
+        <div class="buttons">
+            <button class="btn btn-yes" onclick="goToLinkedIn()">Sí</button>
+            <button class="btn btn-no" onclick="showVideo()">No</button>
+        </div>
+    </div>
+
+    <!-- Video overlay para la respuesta "No" -->
+    <div class="video-overlay" id="videoOverlay">
+        <iframe id="youtubePlayer" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+
+    <!-- Música de fondo (YouTube) -->
+    <iframe id="musicPlayer" src="https://www.youtube.com/embed/12qThgpRzcQ?autoplay=1&loop=1&playlist=12qThgpRzcQ" style="display:none;" allow="autoplay"></iframe>
 
     <script>
         // Crear luces de circo
@@ -144,17 +231,35 @@
             lightsContainer.appendChild(light);
         }
 
-        // Reproducir música de circo al hacer clic (requerido por navegadores)
-        const music = document.getElementById('circusMusic');
-        document.body.addEventListener('click', () => {
-            if (music.paused) {
-                music.play().catch(e => console.log('Audio bloqueado:', e));
-            }
-        }, { once: true });
+        // Función para ir a LinkedIn
+        function goToLinkedIn() {
+            window.open('https://www.linkedin.com', '_blank');
+        }
 
-        // Intentar reproducción automática
-        music.play().catch(() => {
-            console.log('Click para activar la música');
+        // Función para mostrar el video en pantalla completa
+        function showVideo() {
+            const overlay = document.getElementById('videoOverlay');
+            const player = document.getElementById('youtubePlayer');
+            
+            // Cargar el video con autoplay
+            player.src = 'https://www.youtube.com/embed/LTpHB78A50o?autoplay=1&enablejsapi=1';
+            overlay.classList.add('active');
+            
+            // Intentar cerrar la pestaña cuando el video termine
+            // Nota: window.close() solo funciona si la pestaña fue abierta por JavaScript
+            // Como alternativa, intentamos detectar el final del video
+            setTimeout(() => {
+                // Si el video dura aproximadamente 3 minutos, intentamos cerrar
+                // Esto es una aproximación ya que no podemos acceder al estado del video fácilmente
+                window.close();
+            }, 180000); // 3 minutos aproximados
+        }
+
+        // Cerrar con Escape también
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('videoOverlay').classList.remove('active');
+            }
         });
     </script>
 </body>
