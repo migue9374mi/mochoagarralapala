@@ -238,11 +238,11 @@
     <script>
         // Crear fondo de palas
         const shovelBg = document.getElementById('shovelBg');
-        const shovel = '⛏️';
+        const shovel = 'PALA ';
         let shovelText = '';
-        for (let i = 0; i < 200; i++) {
-            shovelText += shovel + ' ';
-            if (i % 10 === 9) shovelText += '\n';
+        for (let i = 0; i < 150; i++) {
+            shovelText += shovel;
+            if (i % 8 === 7) shovelText += '\n';
         }
         shovelBg.textContent = shovelText;
 
@@ -250,6 +250,11 @@
         const bgMusic = document.getElementById('bgMusic');
         const startOverlay = document.getElementById('startOverlay');
         bgMusic.volume = 0.7;
+
+        // Asegurar que el video NO se reproduzca al cargar
+        const noVideo = document.getElementById('noVideo');
+        noVideo.pause();
+        noVideo.currentTime = 0;
 
         // Al hacer clic en el overlay, iniciar música y ocultar overlay
         startOverlay.addEventListener('click', function() {
