@@ -36,6 +36,16 @@
             background-image: url("pala.png");
             background-size: 80px 80px;
             overflow: hidden;
+            animation: moveShovels 20s linear infinite;
+        }
+
+        @keyframes moveShovels {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 800px 800px;
+            }
         }
 
         .container {
